@@ -1,0 +1,30 @@
+# Manifesto della gara. Unico file che si edita a mano all'apertura.
+# README.md si rigenera da qui. Vedi OTTO/docs/repo-gara.md.
+
+id: gara-AAAAMMGG-ente-idprocedura
+oggetto: ""
+stazione_appaltante: ""
+riferimento: ""            # numero di gara / RFQ della stazione appaltante
+cig: ""
+importo_base: 0.00
+lotti: []
+
+criterio: OEPV             # OEPV | prezzo | qualita
+punteggio_tecnico_max: 70
+punteggio_economico_max: 30
+soglia_sbarramento: null   # punti sul tecnico, null se non prevista
+
+stato: individuata         # individuata | in valutazione | in analisi | in impianto |
+                           # in stesura | in revisione | depositata | in commissione |
+                           # esito | chiusa | sospesa | abbandonata
+owner: ""                  # responsabile di gara
+firmatario: ""             # chi firma al cancello 3
+
+riservatezza: interna      # pubblica | interna | nda
+instradamento_modelli: cloud   # cloud | self-hosted   (nda => self-hosted, verificato)
+
+piattaforma: ""            # portale telematico di presentazione
+buffer_caricamento_ore: 6  # non comprimibile
+
+archivio_precedente: ""    # percorso Nextcloud, se la gara viene da lì
+motivazione_uscita: ""     # obbligatoria per stato sospesa | abbandonata

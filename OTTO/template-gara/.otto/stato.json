@@ -1,0 +1,9 @@
+{
+  "stato": "individuata",
+  "transizioni": [],
+  "cancelli": {
+    "gate-1-griglia": null,
+    "gate-2-impianto": null,
+    "gate-3-firma": null
+  }
+}

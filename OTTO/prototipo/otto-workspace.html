@@ -1,0 +1,797 @@
+<title>OTTO Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+:root{
+  --ground:#EDF0F3; --surface:#FCFCFB; --surface-2:#F3F6F8;
+  --line:#CFD9E0; --line-soft:#E2E8EC;
+  --ink:#131C25; --muted:#5A6976; --faint:#8595A2;
+  --accent:#1B4B8F; --accent-2:#3D74C4; --accent-soft:#DEE8F5;
+  --ok:#2F6141; --ok-soft:#DFEBE2;
+  --warn:#8A6614; --warn-soft:#F5EBD3;
+  --crit:#9C3323; --crit-soft:#F6E0DA;
+  --shadow:0 8px 28px rgba(19,28,37,.14);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0D1319; --surface:#151D25; --surface-2:#1A242D;
+  --line:#2B3843; --line-soft:#212C36;
+  --ink:#E3E9EE; --muted:#96A5B2; --faint:#71828F;
+  --accent:#84B2E8; --accent-2:#A6C8F0; --accent-soft:#1B2C42;
+  --ok:#84B992; --ok-soft:#17291D;
+  --warn:#D6B268; --warn-soft:#2C2413;
+  --crit:#E38F7C; --crit-soft:#301711;
+  --shadow:0 8px 28px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{
+  --ground:#0D1319; --surface:#151D25; --surface-2:#1A242D;
+  --line:#2B3843; --line-soft:#212C36;
+  --ink:#E3E9EE; --muted:#96A5B2; --faint:#71828F;
+  --accent:#84B2E8; --accent-2:#A6C8F0; --accent-soft:#1B2C42;
+  --ok:#84B992; --ok-soft:#17291D;
+  --warn:#D6B268; --warn-soft:#2C2413;
+  --crit:#E38F7C; --crit-soft:#301711;
+  --shadow:0 8px 28px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-rows:auto auto auto 1fr;height:100vh;overflow:hidden}
+
+/* ---------- topbar ---------- */
+.topbar{
+  display:flex;align-items:center;gap:16px;padding:10px 18px;
+  background:var(--surface);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.brand svg{width:30px;height:30px;display:block}
+.brand .wm{
+  font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:19px;
+  letter-spacing:-.02em;color:var(--accent);
+}
+.gara{min-width:0;flex:1 1 auto;border-left:1px solid var(--line);padding-left:16px}
+.gara h1{margin:0;font-size:14.5px;font-weight:600;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gara .sub{font-size:11.5px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.chips{display:flex;gap:7px;align-items:center;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
+.chip{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);
+  border-radius:2px;color:var(--muted);white-space:nowrap;
+}
+.chip.demo{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.chip.risv{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.themebtn{border:1px solid var(--line);border-radius:2px;padding:3px 8px;font-size:11px;color:var(--muted)}
+
+/* ---------- statebar ---------- */
+.statebar{
+  background:var(--surface);border-bottom:1px solid var(--line);
+  padding:12px 18px 0;overflow-x:auto;
+}
+.steps{display:flex;align-items:flex-start;min-width:940px;gap:0}
+.step{
+  flex:1 1 0;position:relative;padding:0 4px 12px;text-align:left;
+  border:0;border-bottom:2px solid transparent;
+}
+.step:hover .st-name{color:var(--ink)}
+.step .rail{display:flex;align-items:center;height:18px;margin-bottom:6px}
+.step .line{flex:1;height:2px;background:var(--line)}
+.step .line.done{background:var(--accent)}
+.step .dot{
+  width:11px;height:11px;border-radius:50%;border:2px solid var(--line);
+  background:var(--surface);flex:0 0 auto;
+}
+.step.done .dot{background:var(--accent);border-color:var(--accent)}
+.step.now .dot{background:var(--surface);border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft)}
+.step .st-name{font-size:11.5px;font-weight:500;color:var(--muted);display:block;line-height:1.25}
+.step.now .st-name{color:var(--accent);font-weight:600}
+.step.sel{border-bottom-color:var(--accent)}
+.step .st-meta{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--faint);display:block}
+.step .gate{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+  letter-spacing:.06em;padding:1px 5px;margin-top:3px;border-radius:2px;
+}
+.gate.ok{background:var(--ok-soft);color:var(--ok)}
+.gate.open{background:var(--crit-soft);color:var(--crit)}
+.gate.wait{background:var(--surface-2);color:var(--faint)}
+
+/* ---------- deadlines ---------- */
+.dlbar{
+  display:flex;gap:10px;align-items:stretch;padding:10px 18px;
+  background:var(--surface-2);border-bottom:1px solid var(--line);
+  overflow-x:auto;
+}
+.dl{
+  border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  padding:6px 11px;min-width:150px;flex:0 0 auto;border-left-width:3px;
+}
+.dl .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);display:block}
+.dl .v{display:block;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.35}
+.dl .d{display:block;font-size:10.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace;line-height:1.3}
+.dl.past{opacity:.55;border-left-color:var(--line)}
+.dl.ok{border-left-color:var(--ok)} .dl.ok .v{color:var(--ok)}
+.dl.warn{border-left-color:var(--warn)} .dl.warn .v{color:var(--warn)}
+.dl.crit{border-left-color:var(--crit)} .dl.crit .v{color:var(--crit)}
+.agentbadge{
+  margin-left:auto;display:flex;align-items:center;gap:9px;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  padding:6px 12px 6px 9px;text-align:left;
+}
+.agentbadge:hover{border-color:var(--accent)}
+.agentbadge svg{width:30px;height:30px;display:block;flex:0 0 auto}
+.agentbadge .t{font-size:11.5px;font-weight:600;line-height:1.25}
+.agentbadge .s{font-size:10px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+
+/* ---------- body ---------- */
+.body{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;overflow:hidden}
+.col{overflow-y:auto;min-height:0}
+.tree{background:var(--surface);border-right:1px solid var(--line);padding:14px 0 40px}
+.stage{padding:20px 22px 60px;min-width:0}
+.queue{background:var(--surface);border-left:1px solid var(--line);padding:14px 14px 60px}
+
+.colhead{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);padding:0 14px 8px;
+}
+.queue .colhead{padding-left:0;padding-right:0}
+
+/* tree */
+.tnode{display:flex;align-items:center;gap:7px;width:100%;padding:3px 14px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-align:left;color:var(--ink);border-radius:0}
+.tnode:hover{background:var(--surface-2)}
+.tnode.sel{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.tnode .ic{width:12px;flex:0 0 auto;color:var(--faint);text-align:center;font-size:10px}
+.tnode .nm{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tnode .bd{font-size:9.5px;color:var(--faint)}
+.tnode .st{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+.st.g{background:var(--ok)} .st.a{background:var(--warn)} .st.r{background:var(--crit)}
+.st.n{background:var(--line)}
+.tkids{margin:0;padding:0;list-style:none}
+
+/* stage */
+.stage h2{font-family:Archivo,system-ui,sans-serif;font-size:19px;font-weight:600;
+  margin:0 0 3px;letter-spacing:-.01em}
+.stage .lede{color:var(--muted);font-size:12.5px;margin:0 0 20px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:13px 15px}
+.kpi .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+.kpi .v{font-family:Archivo,system-ui,sans-serif;font-size:27px;font-weight:700;
+  line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .u{font-size:13px;font-weight:500;color:var(--muted)}
+.kpi .n{font-size:11px;color:var(--muted);margin-top:6px;display:block}
+.meter{margin-top:9px;height:7px;background:var(--surface-2);border-radius:4px;position:relative;overflow:visible}
+.meter .fill{height:7px;border-radius:4px;background:var(--accent)}
+.meter .thr{position:absolute;top:-3px;width:2px;height:13px;background:var(--crit)}
+.meter .thrlab{position:absolute;top:14px;font-family:"IBM Plex Mono",monospace;
+  font-size:9px;color:var(--crit);transform:translateX(-50%)}
+
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+.tablecard{background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow-x:auto}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:9.5px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:9px 12px;
+  border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface-2)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:"IBM Plex Mono",monospace}
+.pill{display:inline-flex;align-items:center;gap:5px;font-family:"IBM Plex Mono",monospace;
+  font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.crit{background:var(--crit-soft);color:var(--crit)}
+.pill.idle{background:var(--surface-2);color:var(--muted)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+
+/* dispersione: range bar */
+.disp{display:flex;align-items:center;gap:8px}
+.disp svg{display:block}
+.disp .val{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+
+.filecard{background:var(--surface);border:1px solid var(--line);border-radius:3px}
+.filecard .fh{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);
+  background:var(--surface-2);font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+.filebody{padding:18px 20px;font-size:13.5px;line-height:1.7;max-height:52vh;overflow:auto}
+.filebody p{margin:0 0 13px}
+mark{background:var(--accent-soft);color:inherit;padding:0 2px;border-radius:2px;
+  box-shadow:0 1px 0 var(--accent-2)}
+.src{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+  color:var(--accent);background:var(--accent-soft);padding:0 4px;border-radius:2px;
+  margin-left:3px;vertical-align:2px}
+.gap{background:var(--crit-soft);color:var(--crit);font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  padding:0 4px;border-radius:2px}
+pre.raw{margin:0;padding:16px 18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  line-height:1.6;overflow:auto;max-height:52vh;white-space:pre}
+
+/* queue */
+.nba{
+  width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);
+  border-left-width:3px;border-radius:3px;padding:10px 12px;margin-bottom:9px;display:block;
+}
+.nba:hover{border-color:var(--accent);border-left-color:inherit}
+.nba.crit{border-left-color:var(--crit)}
+.nba.warn{border-left-color:var(--warn)}
+.nba.info{border-left-color:var(--accent)}
+.nba.gate{border-left-color:var(--accent);background:var(--accent-soft)}
+.nba .r1{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
+.nba .t{font-size:12.5px;font-weight:600;line-height:1.35;margin:0 0 5px}
+.nba .m{display:flex;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;
+  font-size:10px;color:var(--muted)}
+.nba .det{margin-top:9px;padding-top:9px;border-top:1px solid var(--line-soft);
+  font-size:12px;color:var(--muted);line-height:1.5}
+.nba .det b{color:var(--ink);font-weight:600}
+.pts{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+
+/* copilot */
+.fab{
+  position:fixed;right:20px;bottom:20px;z-index:40;display:flex;align-items:center;gap:9px;
+  background:var(--accent);color:#FBFBFA;border-radius:26px;padding:9px 17px 9px 11px;
+  box-shadow:var(--shadow);font-weight:600;font-size:13px;
+}
+.fab svg{width:26px;height:26px;display:block}
+.copilot{
+  position:fixed;right:20px;bottom:20px;z-index:41;width:min(420px,calc(100vw - 40px));
+  max-height:min(640px,calc(100vh - 40px));background:var(--surface);
+  border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.cp-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);
+  background:var(--surface-2)}
+.cp-head svg{width:28px;height:28px;display:block}
+.cp-head .t{font-weight:600;font-size:13px;line-height:1.2}
+.cp-head .s{font-size:10.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.cp-head .x{margin-left:auto;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px}
+.cp-log{flex:1 1 auto;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.msg{font-size:13px;line-height:1.55}
+.msg.me{align-self:flex-end;background:var(--accent-soft);color:var(--accent);
+  padding:7px 11px;border-radius:12px 12px 3px 12px;max-width:85%}
+.msg.otto{display:flex;gap:9px;align-items:flex-start}
+.msg.otto svg{width:24px;height:24px;flex:0 0 auto;margin-top:1px}
+.msg.otto .bub{background:var(--surface-2);border:1px solid var(--line-soft);
+  padding:9px 12px;border-radius:12px 12px 12px 3px}
+.cites{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cite{font-family:"IBM Plex Mono",monospace;font-size:9.5px;padding:2px 6px;border-radius:2px;
+  border:1px solid var(--line);color:var(--muted)}
+.cite.kf{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.cp-ask{border-top:1px solid var(--line);padding:10px 12px;background:var(--surface-2)}
+.cp-ask .lab{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.qs{display:flex;flex-direction:column;gap:6px}
+.q{text-align:left;border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  padding:6px 10px;font-size:12px;color:var(--ink)}
+.q:hover{border-color:var(--accent);color:var(--accent)}
+
+@media (max-width:1180px){
+  .body{grid-template-columns:210px minmax(0,1fr) 300px}
+}
+@media (max-width:980px){
+  .body{grid-template-columns:1fr;grid-template-rows:auto auto auto;overflow-y:auto}
+  .app{height:auto;overflow:visible}
+  .tree,.queue{border:0;border-bottom:1px solid var(--line)}
+  .col{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="otto-mark" viewBox="0 0 160 160">
+      <g transform="translate(80,80) rotate(-25) scale(0.80) translate(-81,-86)">
+        <path d="M 118 42 L 118 100 A 37 37 0 0 1 44 100 L 44 50 A 12 12 0 0 1 68 50 L 68 90 A 12 12 0 0 0 94 90 L 94 50" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </symbol>
+    <symbol id="otto-sereno" viewBox="0 0 160 160">
+      <rect x="18" y="4" width="124" height="132" rx="46" fill="currentColor"/>
+      <circle cx="82" cy="78" r="12.5" fill="var(--surface)"/><circle cx="118" cy="78" r="12.5" fill="var(--surface)"/><circle cx="84" cy="80" r="6" fill="currentColor"/><circle cx="120" cy="80" r="6" fill="currentColor"/><path d="M 91 102 q 9 8 18 0" fill="none" stroke="var(--surface)" stroke-width="5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="otto-attento" viewBox="0 0 160 160">
+      <rect x="18" y="4" width="124" height="132" rx="46" fill="currentColor"/>
+      <circle cx="82" cy="80" r="12.5" fill="var(--surface)"/><circle cx="118" cy="80" r="12.5" fill="var(--surface)"/><circle cx="82" cy="77" r="6.4" fill="currentColor"/><circle cx="118" cy="77" r="6.4" fill="currentColor"/><path d="M 70 58 q 12 -6 24 -1" fill="none" stroke="var(--surface)" stroke-width="5" stroke-linecap="round"/><path d="M 90 103 h 20" fill="none" stroke="var(--surface)" stroke-width="5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="otto-allarmato" viewBox="0 0 160 160">
+      <rect x="18" y="4" width="124" height="132" rx="46" fill="currentColor"/>
+      <circle cx="82" cy="79" r="14" fill="var(--surface)"/><circle cx="118" cy="79" r="14" fill="var(--surface)"/><circle cx="82" cy="79" r="7" fill="currentColor"/><circle cx="118" cy="79" r="7" fill="currentColor"/><path d="M 68 56 q 13 -5 25 2 M 132 56 q -13 -5 -25 2" fill="none" stroke="var(--surface)" stroke-width="5" stroke-linecap="round"/><ellipse cx="100" cy="105" rx="6" ry="7.5" fill="var(--surface)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 160 160" style="color:var(--accent)" aria-hidden="true"><use href="#otto-mark"/></svg>
+      <span class="wm">OTTO</span>
+    </div>
+    <div class="gara">
+      <h1 id="g-oggetto"></h1>
+      <div class="sub">
+        <span id="g-sa"></span>
+        <span class="mono" id="g-cig"></span>
+        <span class="mono" id="g-imp"></span>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip demo">dati dimostrativi</span>
+      <span class="chip risv" id="g-risv"></span>
+      <span class="chip mono" id="g-repo"></span>
+      <button class="themebtn" id="themebtn" type="button">tema</button>
+    </div>
+  </header>
+
+  <nav class="statebar" aria-label="Stato della gara">
+    <div class="steps" id="steps"></div>
+  </nav>
+
+  <div class="dlbar" id="dlbar"></div>
+
+  <div class="body">
+    <aside class="col tree">
+      <div class="colhead">Fascicolo</div>
+      <ul class="tkids" id="tree"></ul>
+    </aside>
+    <section class="col stage" id="stage"></section>
+    <aside class="col queue">
+      <div class="colhead">Next best action — <span id="q-count"></span></div>
+      <div id="queue"></div>
+    </aside>
+  </div>
+</div>
+
+<button class="fab" id="fab" type="button">
+  <svg viewBox="0 0 160 160" style="color:#FBFBFA" aria-hidden="true"><use href="#otto-sereno"/></svg>
+  Chiedi a Otto
+</button>
+
+<div class="copilot" id="copilot" hidden>
+  <div class="cp-head">
+    <svg viewBox="0 0 160 160" style="color:var(--accent)" aria-hidden="true"><use href="#otto-sereno"/></svg>
+    <div>
+      <div class="t">Otto — copilota del fascicolo</div>
+      <div class="s" id="cp-ctx">contesto: gara + Knowledge Farm</div>
+    </div>
+    <button class="x" id="cp-close" type="button" aria-label="Chiudi">&#215;</button>
+  </div>
+  <div class="cp-log" id="cp-log"></div>
+  <div class="cp-ask">
+    <div class="lab">Domande di esempio</div>
+    <div class="qs" id="cp-qs"></div>
+  </div>
+</div>
+
+<script>
+/* ================= dati dimostrativi ================= */
+const H = 36e5, D = 24 * H;
+const now = new Date();
+const at = (dd, hh = 12, mm = 0) => { const d = new Date(now.getTime() + dd * D); d.setHours(hh, mm, 0, 0); return d; };
+
+const G = {
+  repo: "gara-20261015-aslba-cup-2026",
+  oggetto: "Servizi di contact center sanitario, prenotazione CUP e back office amministrativo",
+  sa: "ASL Bari",
+  cig: "CIG B4L7729X21",
+  importo: "€ 6.240.000 — 36 mesi",
+  riservatezza: "interna",
+  tecnicoMax: 70, sbarramento: 40, buffer: 6,
+  attesoOra: 44.8,
+  statoCorrente: 4
+};
+
+const STATI = [
+  { k: "individuata",    d: at(-24), gate: null },
+  { k: "in valutazione", d: at(-21), gate: null },
+  { k: "in analisi",     d: at(-14), gate: { n: "gate-1-griglia", s: "open", w: "riaperto: T2 e T3 senza decisione" } },
+  { k: "in impianto",    d: at(-8),  gate: { n: "gate-2-impianto", s: "ok", w: "F. Bellifemine · 27 set" } },
+  { k: "in stesura",     d: null,    gate: null },
+  { k: "in revisione",   d: null,    gate: { n: "gate-3-firma", s: "wait", w: "attende stesura" } },
+  { k: "depositata",     d: null,    gate: null },
+  { k: "in commissione", d: null,    gate: null },
+  { k: "esito",          d: null,    gate: null },
+  { k: "chiusa",         d: null,    gate: null }
+];
+
+const SCADENZE = [
+  { k: "chiarimenti", t: "Termine chiarimenti", d: at(-9, 12) },
+  { k: "risposte", t: "Risposte pubblicate", d: at(-2, 18) },
+  { k: "sopralluogo", t: "Sopralluogo obbligatorio", d: at(2, 10) },
+  { k: "presentazione", t: "Presentazione offerta", d: at(11, 12) }
+];
+
+const CRITERI = [
+  { c: "A.1", t: "Modello organizzativo del servizio", max: 12, stato: "chiuso",   coeff: .82, voti: [.80, .85, .80], rischio: 2.2 },
+  { c: "A.2", t: "Dimensionamento e turnazione",       max: 8,  stato: "chiuso",   coeff: .78, voti: [.75, .80, .80], rischio: 1.8 },
+  { c: "B.1", t: "Piattaforma tecnologica e integrazioni CUP", max: 14, stato: "giro 2", coeff: .61, voti: [.45, .75, .62], rischio: 5.5 },
+  { c: "B.2", t: "Sicurezza, continuità e protezione dati", max: 10, stato: "giro 1", coeff: .55, voti: [.50, .60, .55], rischio: 4.5 },
+  { c: "C.1", t: "Presa in carico e piano di transizione", max: 9, stato: "bozza",  coeff: .48, voti: [.35, .55, .55], rischio: 4.7 },
+  { c: "C.2", t: "Formazione e qualificazione operatori", max: 7, stato: "chiuso",   coeff: .86, voti: [.85, .90, .85], rischio: 1.0 },
+  { c: "D.1", t: "Monitoraggio, KPI e reportistica",     max: 6,  stato: "giro 1",  coeff: .70, voti: [.65, .75, .70], rischio: 1.8 },
+  { c: "D.2", t: "Migliorie e innovazione di servizio",  max: 4,  stato: "da scrivere", coeff: null, voti: null, rischio: 4.0 }
+];
+
+const TABELLARI = [
+  { c: "T1", t: "Certificazione ISO/IEC 27001 in corso di validità", liv: "0 / 2 punti", nat: "possesso", dec: "SÌ — cert. n. IT-27001-4471", pts: "+2,0", s: "ok" },
+  { c: "T2", t: "Connettore certificato verso il CUP regionale Puglia", liv: "0 / 3 punti", nat: "possesso", dec: "aperta", pts: "3,0 in gioco", s: "crit" },
+  { c: "T3", t: "Quota di personale in smart working", liv: "≤20% 0 · 20–50% 1 · >50% 2", nat: "scelta organizzativa", dec: "aperta", pts: "2,0 in gioco", s: "crit" },
+  { c: "T4", t: "Sede operativa entro 50 km dalla ASL", liv: "0 / 2 punti", nat: "dichiarazione", dec: "SÌ — Molfetta, 28 km", pts: "+2,0", s: "ok" }
+];
+
+const NBA = [
+  { lvl: "gate", tipo: "cancello", t: "Cancello 1 riaperto: decidere T2 e T3 prima di proseguire",
+    pts: "5,0 punti in gioco", owner: "F. Bellifemine", entro: "entro 2 giorni", da: "T · checklist tabellari",
+    det: "Due caselle tabellari restano senza decisione firmata. <b>T2</b> chiede il possesso di un connettore certificato verso il CUP regionale: la Knowledge Farm non trova certificazione a nostro nome, quindi la risposta è no oppure va acquisita, e l'acquisizione ha un lead time di 30 giorni che <b>non entra più nel calendario</b>. <b>T3</b> è una scelta aziendale: dichiarare oltre il 50% di smart working vale 2 punti pieni contro 1. Un tabellare non passa dal redattore — si decide qui e si trascrive." },
+  { lvl: "crit", tipo: "bloccante", t: "Tre segnaposto aperti sul criterio B.1, che vale 14 punti",
+    pts: "5,5 punti a rischio", owner: "M. Carbonara", entro: "entro 3 giorni", da: "C · redattore",
+    det: "Il redattore non ha trovato in Knowledge Farm il numero di transazioni/giorno gestite sull'integrazione CUP di ASL Foggia, il tempo medio di sincronizzazione e la data di collaudo. Ha lasciato <b>[[DATO: …]]</b> invece di stimare. La consegna resta bloccata finché i tre segnaposto non sono chiusi: sono la differenza fra una promessa e una dimostrazione." },
+  { lvl: "crit", tipo: "punteggio", t: "B.1 — dispersione 0,30 fra i tre commissari sulla stessa referenza",
+    pts: "+3,2 punti recuperabili", owner: "M. Carbonara", entro: "questo giro", da: "D · collegio giudicante",
+    det: "I tre profili hanno votato 0,45 / 0,75 / 0,62 sul medesimo passaggio. La dispersione non misura disaccordo: misura che l'evidenza non è verificabile e ognuno ha proiettato la propria lettura. L'intervento proposto sostituisce «la piattaforma è già integrata con i principali sistemi CUP regionali» con il nome del sistema, la data di collaudo e il volume gestito." },
+  { lvl: "warn", tipo: "punteggio", t: "C.1 sotto la densità di evidenza minima (0,9 contro 2,0 per cartella)",
+    pts: "+2,8 punti recuperabili", owner: "M. Carbonara", entro: "entro 4 giorni", da: "D1 · grader deterministico",
+    det: "Nel paragrafo sulla presa in carico ci sono nove affermazioni e due sole fonti. Nella gara GSE le sezioni scritte con numeri, nomi propri e riferimenti normativi hanno preso l'85% del massimo; quelle di prosa qualitativa si sono fermate al 55%. Stessa azienda, stesso documento, stessa commissione: cambia solo la densità." },
+  { lvl: "warn", tipo: "tempo", t: "Sopralluogo obbligatorio non ancora prenotato",
+    pts: "esclusione se saltato", owner: "R. Deleo", entro: "fra 2 giorni", da: "F · pianificatore",
+    det: "Il sopralluogo è condizione di ammissibilità (disciplinare, art. 8.4) e le date disponibili si chiudono con 48 ore di anticipo. OTTO non prenota: la richiesta è un atto dell'operatore economico e va fatta dal portale. Qui resta in coda finché la ricevuta non entra in <b>00-fonte/</b>." },
+  { lvl: "warn", tipo: "chiarimenti", t: "Chiarimento 004 tocca il criterio D.1 — verificare la scheda",
+    pts: "1 paragrafo da rivedere", owner: "R. Deleo", entro: "entro 2 giorni", da: "F · pianificatore",
+    det: "La risposta pubblicata due giorni fa precisa che la reportistica va consegnata in formato aperto e con cadenza mensile, non trimestrale. La scheda del paragrafo D.1 e il testo già scritto parlano di cadenza trimestrale: la scheda va aggiornata e il paragrafo rigenerato." },
+  { lvl: "info", tipo: "punteggio", t: "D.2 non è ancora stato scritto — 4 punti interamente disponibili",
+    pts: "4,0 punti disponibili", owner: "M. Carbonara", entro: "entro 5 giorni", da: "B · architetto",
+    det: "La scheda esiste e il budget è di 4.500 caratteri. Il differenziatore proposto è l'assistente di triage sui contatti in coda, con la metrica di deflection misurata su LUO. Serve conferma dal commerciale che sia raccontabile su questa procedura." }
+];
+
+const TREE = [
+  { n: "gara.yaml", t: "f", st: "g", k: "yaml" },
+  { n: "README.md", t: "f", st: "g", k: "readme" },
+  { n: "00-fonte/", t: "d", bd: "14 file", st: "g", kids: [
+    { n: "disciplinare.pdf", t: "f", st: "g" },
+    { n: "capitolato-tecnico.pdf", t: "f", st: "g" },
+    { n: "allegati/", t: "d", bd: "7", st: "g" },
+    { n: "chiarimenti/", t: "d", bd: "4", st: "a", k: "chiar" },
+    { n: "MANIFEST.sha256", t: "f", st: "g" }
+  ]},
+  { n: "01-analisi/", t: "d", bd: "5 file", st: "a", kids: [
+    { n: "corpus.jsonl", t: "f", st: "g" },
+    { n: "bando-analizzato.json", t: "f", st: "g" },
+    { n: "griglia-criteri.md", t: "f", st: "g" },
+    { n: "tabellari.md", t: "f", st: "r", k: "tabellari" },
+    { n: "bid-no-bid.md", t: "f", st: "g" }
+  ]},
+  { n: "02-impianto/", t: "d", bd: "11 file", st: "g", kids: [
+    { n: "scaletta.json", t: "f", st: "g" },
+    { n: "schede/", t: "d", bd: "8", st: "g" },
+    { n: "posizionamento.md", t: "f", st: "g" },
+    { n: "evidenze.md", t: "f", st: "g" }
+  ]},
+  { n: "03-offerta/", t: "d", bd: "in corso", st: "a", kids: [
+    { n: "paragrafi/", t: "d", bd: "7 / 8", st: "a", kids: [
+      { n: "B.1.md", t: "f", st: "r", k: "par" },
+      { n: "B.2.md", t: "f", st: "a" },
+      { n: "C.1.md", t: "f", st: "a" }
+    ]},
+    { n: "metriche/", t: "d", bd: "7", st: "a" },
+    { n: "valutazioni/", t: "d", bd: "12", st: "a" },
+    { n: "lacune.md", t: "f", st: "r" },
+    { n: "build/", t: "d", bd: "vuota", st: "n" }
+  ]},
+  { n: "04-consegna/", t: "d", bd: "vuota", st: "n" },
+  { n: "05-esito/", t: "d", bd: "vuota", st: "n" },
+  { n: ".otto/", t: "d", bd: "stato", st: "g", kids: [
+    { n: "stato.json", t: "f", st: "g" },
+    { n: "piano.json", t: "f", st: "g" },
+    { n: "alert.jsonl", t: "f", st: "a" },
+    { n: "run/", t: "d", bd: "38", st: "g" }
+  ]}
+];
+
+const PARAGRAFO = `<p><b>B.1 — Piattaforma tecnologica e integrazioni CUP</b></p>
+<p>La ASL chiede che la piattaforma di contact center dialoghi con il CUP regionale senza
+interventi manuali sulle code di prenotazione <span class="src">disciplinare p.34 art.9.2</span>.
+LUO eroga il servizio su <mark>una piattaforma già in esercizio su tre committenti sanitari</mark>
+<span class="src">KF·ref-2291</span> e ne integra il CUP attraverso un connettore applicativo che
+espone le operazioni di ricerca disponibilità, prenotazione, spostamento e disdetta.</p>
+<p>Il collaudo dell'integrazione presso ASL Foggia si è chiuso il <span class="gap">[[DATO: data di
+collaudo ASL Foggia]]</span> e da allora il connettore gestisce <span class="gap">[[DATO: transazioni
+medie giorno]]</span> transazioni al giorno, con un tempo medio di sincronizzazione di
+<span class="gap">[[DATO: tempo medio sincronizzazione]]</span>.</p>
+<p>La continuità operativa è garantita da un doppio nodo attivo/attivo
+<span class="src">KF·arch-118</span> e la piattaforma è già integrata con i principali sistemi
+CUP regionali.</p>`;
+
+const CHIARIMENTI = `# Chiarimenti acquisiti
+
+001-20260908.pdf   art. 6.1 — requisiti di capacità tecnica     nessun impatto
+002-20260915.pdf   art. 9.2 — protocollo del connettore CUP     scheda B.1 aggiornata
+003-20260919.pdf   allegato 4 — format della relazione          vincoli formali aggiornati
+004-20260930.pdf   art. 11 — cadenza della reportistica         D.1 DA RIGENERARE
+
+Il pianificatore confronta ogni chiarimento con la griglia dei criteri a ogni
+esecuzione. Un chiarimento che ridefinisce un sub-criterio invalida a valle la
+scheda, il paragrafo scritto e la sua valutazione: qui è il caso di 004.`;
+
+const QA = [
+  { q: "Perché siamo in giallo?",
+    a: "Due cose. Il <b>cancello 1 è riaperto</b>: T2 e T3 non hanno decisione firmata e valgono 5 punti tabellari; il lead time della certificazione di T2 non entra più nel calendario. E il <b>punteggio tecnico atteso è 44,8 su 70</b>, sopra la soglia di sbarramento di 40 ma con soli 4,8 punti di margine, concentrati su B.1 e C.1 che sono ancora aperti.",
+    cites: ["01-analisi/tabellari.md", ".otto/piano.json", "disciplinare p.12 art.5.3"] },
+  { q: "Dove dice che il sopralluogo è obbligatorio?",
+    a: "Disciplinare, articolo 8.4, pagina 29: la mancata effettuazione del sopralluogo comporta l'esclusione. Le date si prenotano dal portale con almeno 48 ore di anticipo, e il pianificatore ha messo la prenotazione in coda perché <b>OTTO non comunica con la stazione appaltante</b>.",
+    cites: ["disciplinare p.29 art.8.4"] },
+  { q: "Quali referenze abbiamo su CUP sanitario?",
+    a: "Knowledge Farm ne restituisce tre: <b>ASL Foggia</b> — connettore CUP in esercizio dal 2024, con volumi misurati; <b>ASP Ragusa</b> — prenotazione telefonica e ricall, senza integrazione CUP; <b>AOU Careggi</b> — back office amministrativo, non pertinente al criterio. Solo la prima regge il criterio B.1, e le mancano tre dati che il redattore ha dichiarato come lacune.",
+    cites: ["KF·ref-2291", "KF·ref-1874", "KF·ref-0932"] },
+  { q: "Cosa cambia il chiarimento 004?",
+    a: "Precisa che la reportistica va consegnata in formato aperto con cadenza <b>mensile</b>, non trimestrale. La scheda del paragrafo D.1 e il testo già scritto dicono trimestrale: la scheda va corretta e il paragrafo rigenerato. È in coda come azione di R. Deleo.",
+    cites: ["00-fonte/chiarimenti/004-20260930.pdf", "02-impianto/schede/D.1.json"] },
+  { q: "Perché il collegio ha dato 0,45 su B.1?",
+    a: "Il commissario con profilo tecnico ha citato «la piattaforma è già integrata con i principali sistemi CUP regionali» e l'ha classificata come affermazione non verificabile: nessun nome di sistema, nessuna data, nessun volume. Gli altri due, con profili amministrativo e di servizio, hanno dato 0,75 e 0,62. La <b>dispersione di 0,30</b> è il segnale: quando l'evidenza è fragile, ciascuno proietta la propria lettura.",
+    cites: ["03-offerta/valutazioni/B.1.giro-2.json"] }
+];
+
+/* ================= stato UI ================= */
+let selStato = G.statoCorrente;
+let selFile = null;
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const fmtD = d => d.toLocaleDateString("it-IT", { day: "2-digit", month: "short" });
+const fmtDT = d => d.toLocaleString("it-IT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+function countdown(d) {
+  const ms = d - now;
+  if (ms < 0) return { txt: "trascorsa", cls: "past" };
+  const gg = Math.floor(ms / D), hh = Math.floor((ms % D) / H);
+  return { txt: gg > 0 ? `${gg}g ${hh}h` : `${hh}h`, cls: gg > 7 ? "ok" : gg > 2 ? "warn" : "crit" };
+}
+const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+/* ================= testata ================= */
+$("#g-oggetto").textContent = G.oggetto;
+$("#g-sa").textContent = G.sa;
+$("#g-cig").textContent = G.cig;
+$("#g-imp").textContent = G.importo;
+$("#g-risv").textContent = G.riservatezza;
+$("#g-repo").textContent = G.repo;
+
+/* ================= barra degli stati ================= */
+function renderSteps() {
+  $("#steps").innerHTML = STATI.map((s, i) => {
+    const cls = i < G.statoCorrente ? "done" : i === G.statoCorrente ? "now" : "";
+    const sel = i === selStato ? " sel" : "";
+    const gate = s.gate
+      ? `<span class="gate ${s.gate.s === "ok" ? "ok" : s.gate.s === "open" ? "open" : "wait"}">◆ ${s.gate.n}</span>`
+      : "";
+    return `<button class="step ${cls}${sel}" data-i="${i}" type="button">
+      <span class="rail"><span class="dot"></span><span class="line ${i < G.statoCorrente ? "done" : ""}"></span></span>
+      <span class="st-name">${s.k}</span>
+      <span class="st-meta">${s.d ? fmtD(s.d) : "—"}</span>
+      ${gate}
+    </button>`;
+  }).join("");
+  document.querySelectorAll(".step").forEach(b => b.onclick = () => {
+    selStato = +b.dataset.i; selFile = null; renderSteps(); renderStage();
+  });
+}
+
+/* ================= scadenze ================= */
+function renderScadenze() {
+  const items = SCADENZE.map(s => {
+    const c = countdown(s.d);
+    return `<div class="dl ${c.cls}"><span class="k">${s.t}</span>
+      <span class="v tnum">${c.txt}</span>
+      <span class="d">${fmtDT(s.d)}</span></div>`;
+  }).join("");
+  const buffer = `<div class="dl ok"><span class="k">Buffer caricamento</span>
+      <span class="v tnum">${G.buffer}h</span><span class="d">non comprimibile</span></div>`;
+  const badge = `<button class="agentbadge" id="agentbadge" type="button">
+      <svg viewBox="0 0 160 160" style="color:var(--warn)" aria-hidden="true"><use href="#otto-attento"/></svg>
+      <span><span class="t">Otto è attento</span><br>
+      <span class="s">F · pianificatore · ultimo giro 09:12</span></span></button>`;
+  $("#dlbar").innerHTML = items + buffer + badge;
+  $("#agentbadge").onclick = () => openCopilot("Perché siamo in giallo?");
+}
+
+/* ================= albero ================= */
+function renderTree() {
+  const node = (n, depth) => {
+    const pad = 14 + depth * 12;
+    const ic = n.t === "d" ? "▸" : "·";
+    const sel = selFile === n.k && n.k ? " sel" : "";
+    let h = `<li><button class="tnode${sel}" style="padding-left:${pad}px" data-k="${n.k || ""}" type="button">
+        <span class="ic">${ic}</span><span class="nm">${n.n}</span>
+        ${n.bd ? `<span class="bd">${n.bd}</span>` : ""}
+        <span class="st ${n.st}"></span></button>`;
+    if (n.kids) h += `<ul class="tkids">${n.kids.map(k => node(k, depth + 1)).join("")}</ul>`;
+    return h + "</li>";
+  };
+  $("#tree").innerHTML = TREE.map(n => node(n, 0)).join("");
+  document.querySelectorAll(".tnode").forEach(b => b.onclick = () => {
+    const k = b.dataset.k; if (!k) return;
+    selFile = k; renderTree(); renderStage();
+  });
+}
+
+/* ================= stage ================= */
+function dispersioneSVG(voti) {
+  if (!voti) return `<span class="val">—</span>`;
+  const mn = Math.min(...voti), mx = Math.max(...voti), me = voti.reduce((a, b) => a + b, 0) / 3;
+  const W = 78, x = v => 4 + v * (W - 8);
+  const spread = (mx - mn).toFixed(2).replace(".", ",");
+  const wide = (mx - mn) >= .2;
+  return `<span class="disp">
+    <svg width="${W}" height="14" viewBox="0 0 ${W} 14" role="img" aria-label="voti ${voti.join(" ")}">
+      <line x1="4" y1="7" x2="${W - 4}" y2="7" stroke="var(--line)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="${x(mn)}" y1="7" x2="${x(mx)}" y2="7" stroke="${wide ? "var(--crit)" : "var(--accent)"}" stroke-width="4" stroke-linecap="round"/>
+      <line x1="${x(me)}" y1="2" x2="${x(me)}" y2="12" stroke="var(--ink)" stroke-width="2"/>
+    </svg>
+    <span class="val tnum"${wide ? ' style="color:var(--crit)"' : ""}>±${spread}</span></span>`;
+}
+
+function vistaStesura() {
+  const scritti = CRITERI.filter(c => c.stato !== "da scrivere").length;
+  const rischio = CRITERI.reduce((a, c) => a + c.rischio, 0).toFixed(1).replace(".", ",");
+  const pct = Math.round(G.attesoOra / G.tecnicoMax * 100);
+  const thr = G.sbarramento / G.tecnicoMax * 100;
+  return `
+  <h2>Stesura in corso</h2>
+  <p class="lede">Otto stima il punteggio tecnico simulando la commissione a tre voci. La dispersione fra i tre commissari è un segnale sull'evidenza, non sul disaccordo.</p>
+  <div class="kpis">
+    <div class="kpi">
+      <span class="k">Punteggio tecnico atteso</span>
+      <span class="v tnum">${G.attesoOra.toFixed(1).replace(".", ",")}<span class="u"> / ${G.tecnicoMax}</span></span>
+      <div class="meter"><div class="fill" style="width:${pct}%"></div>
+        <div class="thr" style="left:${thr}%"></div>
+        <div class="thrlab" style="left:${thr}%">sbarr. ${G.sbarramento}</div></div>
+      <span class="n" style="margin-top:18px">margine sulla soglia: <b>+${(G.attesoOra - G.sbarramento).toFixed(1).replace(".", ",")}</b></span>
+    </div>
+    <div class="kpi"><span class="k">Punti a rischio</span>
+      <span class="v tnum" style="color:var(--crit)">${rischio}</span>
+      <span class="n">recuperabili con gli interventi in coda</span></div>
+    <div class="kpi"><span class="k">Paragrafi</span>
+      <span class="v tnum">${scritti}<span class="u"> / ${CRITERI.length}</span></span>
+      <span class="n">3 chiusi · 3 in riscrittura · 1 bozza</span></div>
+    <div class="kpi"><span class="k">Lacune aperte</span>
+      <span class="v tnum" style="color:var(--crit)">3</span>
+      <span class="n">bloccano la consegna finché restano</span></div>
+  </div>
+  <div class="tablecard"><table>
+    <thead><tr><th>Criterio</th><th class="n">Punti</th><th>Stato</th><th class="n">Coeff.</th>
+      <th>Dispersione collegio</th><th class="n">A rischio</th></tr></thead>
+    <tbody>${CRITERI.map(c => {
+      const p = c.stato === "chiuso" ? "ok" : c.stato === "da scrivere" ? "idle" : "warn";
+      return `<tr><td><b>${c.c}</b> &nbsp;<span style="color:var(--muted)">${c.t}</span></td>
+        <td class="n">${c.max}</td>
+        <td><span class="pill ${p}">${c.stato}</span></td>
+        <td class="n">${c.coeff ? c.coeff.toFixed(2).replace(".", ",") : "—"}</td>
+        <td>${dispersioneSVG(c.voti)}</td>
+        <td class="n" style="color:${c.rischio >= 4 ? "var(--crit)" : "var(--muted)"}">−${c.rischio.toFixed(1).replace(".", ",")}</td></tr>`;
+    }).join("")}</tbody>
+  </table></div>`;
+}
+
+function vistaAnalisi() {
+  return `
+  <h2>Analisi — griglia e tabellari</h2>
+  <p class="lede">Il cancello 1 si attraversa quando griglia, scadenze e <em>ogni</em> elemento tabellare hanno una decisione firmata. Qui due decisioni mancano ancora, e il cancello è tornato aperto.</p>
+  <div class="tablecard"><table>
+    <thead><tr><th>Cod.</th><th>Elemento</th><th>Livelli</th><th>Natura</th><th>Decisione</th><th class="n">Punti</th></tr></thead>
+    <tbody>${TABELLARI.map(t => `<tr>
+      <td class="n"><b>${t.c}</b></td><td>${t.t}</td>
+      <td class="n" style="color:var(--muted)">${t.liv}</td>
+      <td><span class="pill idle">${t.nat}</span></td>
+      <td><span class="pill ${t.s}">${t.dec}</span></td>
+      <td class="n" style="color:${t.s === "ok" ? "var(--ok)" : "var(--crit)"}">${t.pts}</td></tr>`).join("")}</tbody>
+  </table></div>
+  <p class="lede" style="margin-top:18px">Nella gara GSE G01188 due sole caselle tabellari hanno prodotto il 31% del distacco dal vincitore. Nessuna delle due era una questione di scrittura.</p>`;
+}
+
+function vistaGenerica(i) {
+  const s = STATI[i];
+  const futura = i > G.statoCorrente;
+  return `<h2>${s.k}</h2>
+    <p class="lede">${futura
+      ? "Fase non ancora raggiunta. Nel prototipo la vista è vuota: serve a mostrare che la barra resta navigabile in avanti e all'indietro."
+      : "Fase conclusa. Nel prototipo la vista è sintetica; nel prodotto mostra gli artefatti prodotti e chi ha firmato."}</p>
+    ${s.gate ? `<div class="tablecard" style="padding:16px 18px"><b>${s.gate.n}</b><br>
+      <span style="color:var(--muted)">${s.gate.w}</span></div>` : ""}`;
+}
+
+function vistaFile() {
+  if (selFile === "par") {
+    return `<h2>03-offerta/paragrafi/B.1.md</h2>
+      <p class="lede">Le fonti sono evidenziate; i segnaposto in rosso bloccano la consegna. Nessuna affermazione entra senza un <span class="mono">fonte_id</span>.</p>
+      <div class="filecard"><div class="fh">B.1.md · 4.180 caratteri · giro 2 · densità evidenza 1,4</div>
+      <div class="filebody">${PARAGRAFO}</div></div>`;
+  }
+  if (selFile === "tabellari") return vistaAnalisi();
+  if (selFile === "chiar") {
+    return `<h2>00-fonte/chiarimenti/</h2>
+      <p class="lede">Cartella immutabile. Un chiarimento entra come file nuovo, numerato e datato; non sostituisce mai il precedente.</p>
+      <div class="filecard"><div class="fh">registro dei chiarimenti</div><pre class="raw">${esc(CHIARIMENTI)}</pre></div>`;
+  }
+  const testi = {
+    yaml: `id: ${G.repo}\noggetto: "${G.oggetto}"\nstazione_appaltante: "${G.sa}"\ncriterio: OEPV\npunteggio_tecnico_max: ${G.tecnicoMax}\nsoglia_sbarramento: ${G.sbarramento}\nstato: in stesura\nriservatezza: ${G.riservatezza}\ninstradamento_modelli: cloud\nbuffer_caricamento_ore: ${G.buffer}`,
+    readme: `# ${G.oggetto}\n\nScheda rigenerata da gara.yaml. Non editare a mano.\n\nStato: in stesura\nCancelli: gate-1-griglia ✓ (riaperto)  gate-2-impianto ✓  gate-3-firma —`
+  };
+  return `<h2>${selFile === "yaml" ? "gara.yaml" : "README.md"}</h2>
+    <p class="lede">Il manifesto è l'unico file che si edita a mano all'apertura. La scheda si rigenera da lì.</p>
+    <div class="filecard"><div class="fh">${selFile === "yaml" ? "gara.yaml" : "README.md"}</div>
+    <pre class="raw">${esc(testi[selFile])}</pre></div>`;
+}
+
+function renderStage() {
+  const el = $("#stage");
+  if (selFile) el.innerHTML = vistaFile();
+  else if (selStato === 4) el.innerHTML = vistaStesura();
+  else if (selStato === 2) el.innerHTML = vistaAnalisi();
+  else el.innerHTML = vistaGenerica(selStato);
+  el.scrollTop = 0;
+}
+
+/* ================= coda NBA ================= */
+function renderQueue() {
+  $("#q-count").textContent = `${NBA.length} aperte`;
+  $("#queue").innerHTML = NBA.map((a, i) => `
+    <button class="nba ${a.lvl}" data-i="${i}" type="button">
+      <span class="r1">
+        <span class="pill ${a.lvl === "gate" ? "acc" : a.lvl === "crit" ? "crit" : a.lvl === "warn" ? "warn" : "idle"}">${a.tipo}</span>
+        <span class="pts">${a.pts}</span>
+      </span>
+      <p class="t">${a.t}</p>
+      <span class="m"><span>${a.owner}</span><span>${a.entro}</span><span>← ${a.da}</span></span>
+      <span class="det" hidden>${a.det}</span>
+    </button>`).join("");
+  document.querySelectorAll(".nba").forEach(b => b.onclick = () => {
+    const d = b.querySelector(".det"); d.hidden = !d.hidden;
+  });
+}
+
+/* ================= copilota ================= */
+function ottoMsg(html, cites) {
+  return `<div class="msg otto">
+    <svg viewBox="0 0 160 160" style="color:var(--accent)" aria-hidden="true"><use href="#otto-sereno"/></svg>
+    <div class="bub">${html}
+    ${cites ? `<div class="cites">${cites.map(c =>
+      `<span class="cite ${c.startsWith("KF·") ? "kf" : ""}">${c}</span>`).join("")}</div>` : ""}</div></div>`;
+}
+function renderQs() {
+  $("#cp-qs").innerHTML = QA.map((q, i) => `<button class="q" data-i="${i}" type="button">${q.q}</button>`).join("");
+  document.querySelectorAll(".q").forEach(b => b.onclick = () => ask(+b.dataset.i));
+}
+function ask(i) {
+  const qa = QA[i], log = $("#cp-log");
+  log.insertAdjacentHTML("beforeend", `<div class="msg me">${qa.q}</div>`);
+  log.insertAdjacentHTML("beforeend", ottoMsg(qa.a, qa.cites));
+  log.scrollTop = log.scrollHeight;
+}
+function openCopilot(preset) {
+  $("#copilot").hidden = false; $("#fab").hidden = true;
+  if ($("#cp-log").childElementCount === 0) {
+    $("#cp-log").insertAdjacentHTML("beforeend", ottoMsg(
+      "Leggo il fascicolo <b>" + G.repo + "</b> e la Knowledge Farm. Rispondo con l'ancora del documento o l'id dell'asset: senza ancora non rispondo.<br><br>Non modifico l'offerta — le modifiche passano dalla pipeline, che le registra.",
+      null));
+  }
+  if (preset) { const i = QA.findIndex(q => q.q === preset); if (i >= 0) ask(i); }
+}
+$("#fab").onclick = () => openCopilot();
+$("#cp-close").onclick = () => { $("#copilot").hidden = true; $("#fab").hidden = false; };
+
+/* ================= tema ================= */
+$("#themebtn").onclick = () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  const dark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+};
+
+/* ================= avvio ================= */
+renderSteps(); renderScadenze(); renderTree(); renderStage(); renderQueue(); renderQs();
+</script>

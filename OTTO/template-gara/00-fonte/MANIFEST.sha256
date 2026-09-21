@@ -1,0 +1,3 @@
+# Hash dei documenti di gara al momento dell'acquisizione.
+# Rigenerare con:
+#   shasum -a 256 $(find 00-fonte -type f ! -name MANIFEST.sha256) > 00-fonte/MANIFEST.sha256
