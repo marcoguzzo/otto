@@ -1,0 +1,29 @@
+# Configurazione Gara per OTTO / Bitloop
+procedura:
+  cig: "A09F823B12"
+  cup: "J59I24000120001"
+  titolo: "Servizi di Sviluppo, Manutenzione e Gestione dell'Infrastruttura Cloud-Native e Agenti AI"
+  ente_appaltante: "Ministero per l'Innovazione Tecnologica e la Transizione Digitale"
+  importo_base_asta: 450000.00
+  oneri_sicurezza: 10000.00
+  durata_mesi: 24
+  criterio_aggiudicazione: "OEPV"
+  punteggio_massimo_tecnico: 70
+  punteggio_massimo_economico: 30
+  soglia_sbarramento_tecnico: 42
+
+documenti_fonte:
+  - doc: "disciplinare_di_gara.md"
+  - doc: "capitolato_tecnico.md"
+
+vincoli_formali:
+  max_pagine: 30
+  font_ammessi: ["Arial", "Calibri"]
+  dimensione_font_minima: 11
+  interlinea: 1.15
+  margini_cm: 2.0
+  formato_file: "PDF/A firmato digitalmente CAdES/PAdES"
+
+scadenze:
+  chiarimenti: "2026-10-20T12:00:00"
+  presentazione_offerte: "2026-10-30T12:00:00"
